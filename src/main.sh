@@ -99,7 +99,7 @@ function installTerraform {
   url="https://releases.hashicorp.com/terraform/${tfVersion}/terraform_${tfVersion}_linux_amd64.zip"
 
   echo "Downloading Terraform v${tfVersion}"
-  curl -s -S -L -o /tmp/terraform_${tfVersion} ${url}
+  curl -fsSL -o /tmp/terraform_${tfVersion} ${url}
   if [ "${?}" -ne 0 ]; then
     echo "Failed to download Terraform v${tfVersion}"
     exit 1
@@ -130,7 +130,7 @@ function installTerragrunt {
   url="https://github.com/gruntwork-io/terragrunt/releases/download/${tgVersion}/terragrunt_linux_amd64"
 
   echo "Downloading Terragrunt ${tgVersion}"
-  curl -s -S -L -o /tmp/terragrunt ${url}
+  curl -fsSL -o /tmp/terragrunt ${url}
   if [ "${?}" -ne 0 ]; then
     echo "Failed to download Terragrunt ${tgVersion}"
     exit 1
@@ -139,7 +139,7 @@ function installTerragrunt {
 
   echo "Moving Terragrunt ${tgVersion} to PATH"
   chmod +x /tmp/terragrunt
-  mv /tmp/terragrunt /usr/local/bin/terragrunt 
+  mv /tmp/terragrunt /usr/local/bin/terragrunt
   if [ "${?}" -ne 0 ]; then
     echo "Failed to move Terragrunt ${tgVersion}"
     exit 1
