@@ -44,5 +44,11 @@ outputs:
   tf_actions_fmt_written:
     description: 'Whether or not the Terragrunt formatting was written to source files.'
 runs:
-  using: 'docker'
-  image: './Dockerfile'
+  using: composite
+  steps:
+    - run: env
+      shell: bash
+    - run: bash ${{ github.action_path }}/src/main.sh
+      shell: bash
+  # using: 'docker'
+  # image: './Dockerfile'
