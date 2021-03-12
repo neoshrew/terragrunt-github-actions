@@ -24,6 +24,13 @@ function parseInputs {
     exit 1
   fi
 
+  if [ "${INPUT_TFENV_ACTIONS_VERSION}" != "" ]; then
+    tfenvVersion=${INPUT_TFENV_ACTIONS_VERSION}
+  else
+    echo "Input tfenv_version cannot be empty"
+    exit 1
+  fi
+
   if [ "${INPUT_TG_ACTIONS_VERSION}" != "" ]; then
     tgVersion=${INPUT_TG_ACTIONS_VERSION}
   else
@@ -86,6 +93,18 @@ EOF
 }
 
 function installTerraform {
+  curl -fsL "https://github.com/tfutils/tfenv/archive/v${tfenvVersion}.tar.gz" \
+    | tar -xz -C ~/
+
+  ln -s ~/tfenv-"${tfenvVersion}"/bin/* /usr/local/bin
+
+  REQUIRED_TF_VERSIONS=$(
+    find "${tfWorkingDir}" -name .terraform-version -exec cat {} \; -exec echo \; | sort -u
+  )
+  for TF_VERSION in $REQUIRED_TF_VERSIONS; do
+    tfenv install $TF_VERSION
+  done
+
   if [[ "${tfVersion}" == "latest" ]]; then
     echo "Checking the latest version of Terraform"
     tfVersion=$(curl -sL https://releases.hashicorp.com/terraform/index.json | jq -r '.versions[].version' | grep -v '[-].*' | sort -rV | head -n 1)
@@ -96,23 +115,8 @@ function installTerraform {
     fi
   fi
 
-  url="https://releases.hashicorp.com/terraform/${tfVersion}/terraform_${tfVersion}_linux_amd64.zip"
-
-  echo "Downloading Terraform v${tfVersion}"
-  curl -fsSL -o /tmp/terraform_${tfVersion} ${url}
-  if [ "${?}" -ne 0 ]; then
-    echo "Failed to download Terraform v${tfVersion}"
-    exit 1
-  fi
-  echo "Successfully downloaded Terraform v${tfVersion}"
-
-  echo "Unzipping Terraform v${tfVersion}"
-  unzip -d /usr/local/bin /tmp/terraform_${tfVersion} &> /dev/null
-  if [ "${?}" -ne 0 ]; then
-    echo "Failed to unzip Terraform v${tfVersion}"
-    exit 1
-  fi
-  echo "Successfully unzipped Terraform v${tfVersion}"
+  tfenv install "${tfVersion}"
+  tfenv use "${tfVersion}"
 }
 
 function installTerragrunt {

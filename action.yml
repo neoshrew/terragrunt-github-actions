@@ -14,11 +14,12 @@ inputs:
   tf_actions_version:
     description: 'Terraform version to install.'
     required: true
-    default: 'latest'
+  tfenv_actions_version:
+    descriptino: 'tfenv version to install.'
+    required: true
   tg_actions_version:
     description: 'Terragrunt version to install.'
     required: true
-    default: 'latest'
   tf_actions_cli_credentials_hostname:
     description: 'Hostname for the CLI credentials file.'
     default: 'app.terraform.io'
